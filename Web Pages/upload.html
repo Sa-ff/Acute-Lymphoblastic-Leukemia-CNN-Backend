@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Upload</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .container{display:flex;justify-content:center;padding:40px}
+    .card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,0.12);width:720px}
+    input[type=file]{padding:10px}
+    label{display:block;margin-top:8px}
+    .btn{padding:12px 18px;border-radius:8px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    .note{font-size:13px;color:#666;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">ALL Detector</div>
+    <div class="menu">
+      <a href="/home">Home</a>
+      <a href="/history">History</a>
+      <a href="/create-patient">Create Patient</a>
+      <a href="/patients">Patients</a>
+      <a href="/" id="logoutLink">Logout</a>
+    </div>
+  </div>
+
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E;}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;}
+    .brand{font-weight:700;font-size:20px;color:var(--text);}
+    .menu a {margin-left: 18px;text-decoration: none;color: var(--text);font-weight: 700;font-size: 16px;}
+    .menu a:hover {color: var(--accent);}
+  </style>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="color:var(--accent)">Upload Blood Smear Image</h2>
+      <p class="note">Upload a microscope image. The system will run a model and return a classification.</p>
+
+      <form id="uploadForm" enctype="multipart/form-data">
+        <label>Patient Code (required)</label>
+        <input id="patient_code" placeholder="e.g. P-20251110-01" required />
+
+        <label>Choose image</label>
+        <input id="fileInput" type="file" accept="image/*" required />
+
+        <div style="margin-top:14px">
+          <button class="btn" type="submit">Upload & Predict</button>
+        </div>
+      </form>
+
+      <div id="resp" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+<script>
+document.getElementById('logoutLink').addEventListener('click', ()=>{
+  localStorage.removeItem('access_token'); localStorage.removeItem('username'); window.location.href='/';
+});
+
+document.getElementById('uploadForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fileInput = document.getElementById('fileInput');
+  const patient_code = document.getElementById('patient_code').value.trim();
+  const hcw_username = localStorage.getItem('username') || 'admin';
+
+  if (!fileInput.files.length){ alert('Select an image'); return; }
+  if (!patient_code){ alert('Enter patient code'); return; }
+
+  const form = new FormData();
+  form.append('file', fileInput.files[0]);
+  form.append('patient_code', patient_code);
+  form.append('hcw_username', hcw_username);
+  form.append('notes_before', '');
+  form.append('notes_after', '');
+
+  const respDiv = document.getElementById('resp');
+  respDiv.textContent = 'Uploading and predicting...';
+
+  try {
+    const token = localStorage.getItem('access_token');
+
+    const resp = await fetch('/predictions/', {
+      method:'POST',
+      headers: {'Authorization': `Bearer ${token}`},
+      body: form
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(()=>({detail:'Prediction failed'}));
+      throw new Error(err.detail || ('Prediction failed: ' + resp.status));
+    }
+
+    const data = await resp.json();
+    localStorage.setItem('last_patient_code', patient_code);
+
+    const thumb = data.image?.thumbnail_path?.split(/[\\/]/).pop();
+    const thumbUrl = data.image?.thumbnail_path ? `/files/${data.image.thumbnail_path}` : '';
+
+    const q = new URLSearchParams({
+      class: data.predicted_class,
+      confidence: data.confidence_score,
+      image: thumbUrl
+    });
+
+    window.location.href = '/results?' + q.toString();
+
+
+  } catch(err){
+    console.warn(err);
+    alert('Error: ' + err.message);
+    respDiv.textContent = "Prediction failed. Please try again.";
+    //  No redirect
+  }
+});
+</script>
+</body>
+</html>

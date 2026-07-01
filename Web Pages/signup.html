@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Signup</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh;}
+    .card{background:var(--card);padding:28px;border-radius:14px;width:420px;box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ccc}
+    button{width:100%;padding:12px;border-radius:8px;border:none;background:var(--accent);color:white;font-size:16px;cursor:pointer}
+    .nav{position:absolute;top:18px;left:20px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="nav"><a href="/" style="text-decoration:none;color:#372F2E">ALL Detector</a></div>
+  <div class="card">
+    <h2 style="color:var(--accent)">Create Account</h2>
+    <form id="signupForm">
+      <input id="username" placeholder="username" required />
+      <input id="full_name" placeholder="Full name (optional)" />
+      <input id="email" placeholder="Email (optional)" />
+      <input id="password" placeholder="Password" type="password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <p style="font-size:13px;margin-top:10px">Already have an account? <a href="/" style="color:var(--blue)">Sign in</a></p>
+  </div>
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const payload = {
+    username: document.getElementById('username').value.trim(),
+    full_name: document.getElementById('full_name').value.trim() || null,
+    email: document.getElementById('email').value.trim() || null,
+    password: document.getElementById('password').value
+  };
+  try {
+    const resp = await fetch('/auth/register', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok){
+      alert('Account created. Please login.');
+      window.location.href = '/';
+      return;
+    }
+    const err = await resp.json().catch(()=>({detail:'Failed'}));
+    alert('Error: ' + (err.detail || 'Registration failed'));
+  } catch(e){
+    alert('Network error: ' + e.message);
+  }
+});
+</script>
+</body>
+</html>
+

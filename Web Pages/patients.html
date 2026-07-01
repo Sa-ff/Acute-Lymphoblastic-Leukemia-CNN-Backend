@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Patients</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text)}
+    .nav{display:flex;justify-content:space-between;padding:18px 28px}
+    .container{padding:28px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    th{color:var(--blue)}
+    .small{font-size:13px;color:#666}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">ALL Detector</div>
+    <div class="menu">
+      <a href="/home">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/history">History</a>
+      <a href="/create-patient">Create Patient</a>
+      <a href="/" id="logoutLink">Logout</a>
+    </div>
+  </div>
+
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E;}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;}
+    .brand{font-weight:700;font-size:20px;color:var(--text);}
+    .menu a {margin-left: 18px;text-decoration: none;color: var(--text);font-weight: 700;font-size: 16px;}
+    .menu a:hover {color: var(--accent);}
+  </style>
+
+  <div class="container">
+    <div class="card">
+      <h3 style="color:var(--accent)">Patients</h3>
+      <p class="small">Your patients list</p>
+
+      <!-- Search by patient code (works with your backend) -->
+      <div style="margin:8px 0 16px 0">
+        <input id="searchCode" placeholder="Enter patient code (e.g., P-001)" style="padding:8px;border:1px solid #ccc;border-radius:6px;width:240px" />
+        <button id="searchBtn" style="padding:8px 12px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer">Search</button>
+      </div>
+
+      <table id="patientsTable">
+        <thead><tr><th>Patient Code</th><th>Age</th><th>Gender</th><th>Created At</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+document.getElementById('logoutLink').addEventListener('click', () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('username');
+  window.location.href = '/login';
+});
+
+const token = localStorage.getItem('access_token');
+if (!token) {
+  alert("Not authenticated");
+  window.location.href = "/login";
+}
+
+// Render function
+async function renderPatient(p) {
+  const tbody = document.querySelector('#patientsTable tbody');
+  tbody.innerHTML = '';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${p.patient_code}</td>
+    <td>${p.age ?? '—'}</td>
+    <td>${p.gender ?? '—'}</td>
+    <td>${p.created_at ? new Date(p.created_at).toLocaleString() : ''}</td>
+    <td><a href="/history?patient_code=${encodeURIComponent(p.patient_code)}">History</a></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// Search
+document.getElementById('searchBtn').addEventListener('click', async () => {
+  const code = document.getElementById('searchCode').value.trim();
+  if (!code){
+    alert("Enter a patient code");
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/patients/${encodeURIComponent(code)}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await resp.json();
+
+    if(resp.ok){
+      renderPatient(data);
+    } else {
+      alert("Error: " + data.detail);
+    }
+  } catch (e){
+    alert('Network error: ' + e.message);
+  }
+});
+
+</script>
+</body>
+</html>

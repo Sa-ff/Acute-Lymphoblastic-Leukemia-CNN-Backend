@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Login</title>
+  <style>
+    :root{
+      --bg:#B6D3E5; --accent:#D4575F; --blue:#306793; --text:#372F2E; --card:#F9F9F9;
+    }
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh;}
+    .wrap{width:920px;display:flex;gap:40px;align-items:center;justify-content:center;padding:30px;}
+    .left{flex:1; text-align:left;}
+    .brand{font-weight:700;font-size:28px;margin-bottom:8px}
+    .lead{font-size:20px;color:var(--blue);margin-bottom:18px}
+    .card{background:var(--card);padding:28px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.12);width:360px;}
+    .card h2{color:var(--accent);margin:0 0 10px 0}
+    input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc}
+    button{width:100%;padding:12px;border-radius:8px;border:none;background:var(--accent);color:white;font-size:16px;cursor:pointer}
+    .muted{font-size:13px;color:#666;margin-top:10px}
+    .topnav{position:absolute;top:18px;left:28px;font-weight:700}
+    a.small{color:var(--blue);text-decoration:none;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="topnav">ALL Detector</div>
+  <div class="wrap">
+    <div class="left">
+      <div class="brand">Senior Design Project 2, Group 09 Presents: </div>
+      <div class="lead">Acute Lymphoblastic Leukemia detection Using Deep learning. A healthcare assistant tool</div>
+      <div class="muted">Sign in to manage patients, upload images, and view predictions.</div>
+    </div>
+
+    <div class="card">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input id="username" placeholder="Username" required />
+        <input id="password" type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <div style="margin-top:12px;text-align:center">
+        <a class="small" href="/signup">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+loginForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+      try {
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          alert('Login failed: ' + err.detail);
+          return;
+        }
+
+        const data = await response.json();
+        // Save JWT token
+        localStorage.setItem('username', u);
+        localStorage.setItem('access_token', data.access_token);
+
+        // Redirect to home
+        window.location.href = '/home';
+      } catch (error) {
+        alert('Error connecting to server: ' + error);
+      }
+
+      // Your backend has /auth/token commented out. Keep demo login for now.
+      //if (u === 'admin' && p === 'admin') {
+       // localStorage.setItem('username','admin');
+        //localStorage.setItem('access_token','demo-token');
+      //  window.location.href = '/home';
+      //} else {
+      //  alert('Invalid credentials (demo: admin / admin)');
+      //}
+    
+});
+</script>
+</body>
+</html>

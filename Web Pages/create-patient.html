@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Create Patient</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .nav a{margin-left:14px;text-decoration:none;color:var(--text);font-weight:600}
+    .container{padding:36px;display:flex;justify-content:center}
+    .card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);width:400px}
+    input,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px}
+    button{padding:12px;width:100%;border:none;border-radius:8px;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+    button:hover{background:#b23b45}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">ALL Detector</div>
+    <div>
+      <a href="/home">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/history">History</a>
+      <a href="/patients">Patients</a>
+      <a href="/" id="logoutLink">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="color:var(--accent)">Create New Patient</h2>
+      <form id="patientForm">
+        <input type="text" id="patient_code" placeholder="Patient Code" required />
+        <input type="number" id="age" placeholder="Age" />
+        <select id="gender">
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <input type="text" id="hospital_id" placeholder="Hospital ID" />
+        <button type="submit">Create Patient</button>
+      </form>
+      <div id="status" style="margin-top:12px;color:var(--blue)"></div>
+    </div>
+  </div>
+
+<script>
+document.getElementById('logoutLink').addEventListener('click', ()=>{
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('username');
+  window.location.href = '/login';
+});
+
+document.getElementById('patientForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  const token = localStorage.getItem('access_token');
+  if (!token){
+    document.getElementById('status').textContent = "Error: Not authenticated";
+    return;
+  }
+
+  const payload = {
+    patient_code: document.getElementById('patient_code').value,
+    age: document.getElementById('age').value || null,
+    gender: document.getElementById('gender').value || null,
+    hospital_id: document.getElementById('hospital_id').value || null
+  };
+
+  try {
+    const resp = await fetch('/patients/', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await resp.json();
+
+    if(resp.ok){
+      document.getElementById('status').textContent = 
+        "Patient created: " + data.patient_code;
+    } else {
+      document.getElementById('status').textContent = "Error: " + data.detail;
+    }
+
+  } catch(e){
+    document.getElementById('status').textContent = "Network error: " + e.message;
+  }
+});
+
+</script>
+</body>
+</html>

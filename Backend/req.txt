@@ -1,0 +1,14 @@
+tensorflow
+fastapi
+uvicorn
+python-multipart
+pillow
+matplotlib
+numpy
+passlib[bcrypt]
+python-jose[cryptography] 
+sqlalchemy
+python-dotenv
+pydantic[email] 
+bcrypt==4.2.0 
+passlib==1.7.4

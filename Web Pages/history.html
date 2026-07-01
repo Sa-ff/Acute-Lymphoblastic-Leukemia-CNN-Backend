@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — History</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text)}
+    .nav{display:flex;justify-content:space-between;padding:18px 28px}
+    .container{padding:28px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    th{color:var(--blue)}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">ALL Detector</div>
+    <div class="menu">
+      <a href="/home">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/create-patient">Create Patient</a>
+      <a href="/patients">Patients</a>
+      <a href="/" id="logoutLink">Logout</a>
+    </div>
+  </div>
+
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E;}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;}
+    .brand{font-weight:700;font-size:20px;color:var(--text);}
+    .menu a {margin-left: 18px;text-decoration: none;color: var(--text);font-weight: 700;font-size: 16px;}
+    .menu a:hover {color: var(--accent);}
+  </style>
+
+  <div class="container">
+    <div class="card">
+      <h3 style="color:var(--accent)">Prediction History</h3>
+
+      <div style="margin:8px 0 16px 0">
+        <input id="searchCode" placeholder="Enter patient code to view history" style="padding:8px;border:1px solid #ccc;border-radius:6px;width:260px" />
+        <button id="searchBtn" style="padding:8px 12px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer">Load</button>
+      </div>
+
+      <table id="historyTable">
+        <thead><tr><th>Patient</th><th>Image</th><th>Result</th><th>Confidence</th><th>Date</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+document.getElementById('logoutLink').addEventListener('click', ()=>{localStorage.removeItem('access_token');localStorage.removeItem('username');window.location.href='/'});
+
+function qs(name){return new URLSearchParams(location.search).get(name);}
+
+function thumbUrlFromPath(path){
+  // backend returns absolute path; serve via /files by basename
+  if (!path) return '';
+  const base = path.split(/[\\/]/).pop(); // filename
+  return '/files/thumbs/' + base; // because storage saves thumbs into uploaded_images/thumbs
+}
+
+async function loadHistoryForCode(code){
+  const token = localStorage.getItem('access_token');
+  const tbody = document.querySelector('#historyTable tbody');
+  tbody.innerHTML = '';
+  try {
+    const resp = await fetch(`/patients/${encodeURIComponent(code)}`,{headers:{ 'Authorization': `Bearer ${token}`}});
+    if (!resp.ok){ tbody.innerHTML = '<tr><td colspan="5">Patient not found</td></tr>'; return; }
+    const p = await resp.json();
+    if (Array.isArray(p.predictions) && p.predictions.length){
+      p.predictions.forEach(pred=>{
+        const img = pred.image?.thumbnail_path ? `<img src="${thumbUrlFromPath(pred.image.thumbnail_path)}" style="height:120px;border-radius:4px"/>` : '—';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.patient_code}</td>
+          <td>${img}</td>
+          <td>${pred.predicted_class}</td>
+          <td>${((pred.confidence_score||0)).toFixed(1)}%</td>
+          <td>${pred.created_at ? new Date(pred.created_at).toLocaleString() : ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      return;
+    }
+    tbody.innerHTML = '<tr><td colspan="5">No predictions yet.</td></tr>';
+  } catch(e){ 
+    tbody.innerHTML = '<tr><td colspan="5">Network error: '+e.message+'</td></tr>'; 
+  }
+}
+
+document.getElementById('searchBtn').addEventListener('click', ()=>{
+  const code = document.getElementById('searchCode').value.trim();
+  if (!code){ alert('Enter a patient code'); return; }
+  loadHistoryForCode(code);
+});
+
+</script>
+</body>
+</html>

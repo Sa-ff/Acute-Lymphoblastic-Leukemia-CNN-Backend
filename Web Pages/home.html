@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ALL Detector — Home</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:transparent}
+    .brand{font-weight:700}
+    .nav a{margin-left:14px;text-decoration:none;color:var(--text);font-weight:600}
+    .container{padding:36px;display:flex;gap:28px;justify-content:center}
+    .hero{flex:1;max-width:760px;background:var(--card);padding:28px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+    .controls{width:300px;display:flex;flex-direction:column;gap:12px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    .btn{display:block;padding:12px;border-radius:8px;text-align:center;text-decoration:none;color:white;background:var(--accent)}
+    .small{color:#555;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">ALL Detector</div>
+    <div>
+      <a href="/upload">Upload</a>
+      <a href="/history">History</a>
+      <a href="/create-patient">Create Patient</a>
+      <a href="/patients">Patients</a>
+      <a href="/" id="logoutLink">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1 style="color:var(--accent)">Welcome, <span id="userName">Clinician</span></h1>
+      <p class="small">Use the left panel to upload blood smear images for AI-assisted classification, or browse existing patient records.</p>
+
+      <div style="display:flex;gap:16px;margin-top:18px">
+        <a class="btn" href="/upload">Upload Image for Prediction</a>
+        <a class="btn" style="background:var(--blue)" href="/patients">View Patients</a>
+        <a class="btn" style="background:var(--accent)" href="/create-patient">Create Patient</a>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0;color:var(--accent)">AI Model Information</h4>
+        <p style="margin:8px 0" class="small">Model: EfficientNet-B3 </p>
+        <strong>Purpose:</strong><br> Classifies blood smear images for ALL diagnosis<br>
+        <strong>Note:</strong><br> Demonstration Purposes<br>
+        Optimized for high accuracy with moderate cost.<br>
+        Excellent balance between performance and efficiency<br>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.getElementById('logoutLink').addEventListener('click', ()=>{
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('username');
+  window.location.href = '/login';
+});
+
+const user = localStorage.getItem('username') || 'Clinician';
+document.getElementById('userName').textContent = user;
+ 
+loadRecent();
+</script>
+</body>
+</html>

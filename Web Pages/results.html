@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" /> 
+  <title>ALL Detector — Result</title>
+  <style>
+    :root{--bg:#B6D3E5;--card:#F9F9F9;--accent:#D4575F;--blue:#306793;--text:#372F2E}
+    body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;height:100vh}
+    .card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,0.12);width:520px;text-align:center;display:flex;flex-direction:column;align-items:center}
+    .label{font-size:13px;color:#666;margin-bottom:6px}
+    .big{font-size:22px;color:var(--blue);margin:10px 0}
+    .percent{font-size:36px;color:var(--accent);font-weight:700}
+    img.preview{max-width:100%;display:block;border-radius:8px;margin-top:16px auto 0 auto;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    .actions{margin-top:16px;display:flex;gap:10px;justify-content:center}
+    .btn{padding:10px 14px;border-radius:8px;text-decoration:none;color:white;background:var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="label">Prediction Result</div>
+    <div id="predClass" class="big">—</div>
+    <div id="predConf" class="percent">—</div>
+
+    <img id="preview" class="preview" src="" alt="preview image" style="display:none"/>
+
+    <div class="actions">
+      <a class="btn" id="backBtn" href="/upload">Back to Upload</a>
+      <a class="btn" id="homeBtn" href="/home" style="background:#306793">Home</a>
+    </div>
+    <div style="margin-top:12px;font-size:13px;color:#666" id="extra"></div>
+  </div>
+
+<script>
+function qs(name){return new URLSearchParams(location.search).get(name);}
+const cls = qs('class') || 'Unknown';
+const conf = qs('confidence') || '0';
+const img = decodeURIComponent(qs('image') || '');
+
+
+document.getElementById('predClass').textContent = cls;
+document.getElementById('predConf').textContent = (Number(conf)).toFixed(1) + '%';
+
+if (img && img.startsWith('/')) {
+    const preview = document.getElementById('preview');
+    preview.src = img;
+    preview.style.display = 'block';
+} else {
+    document.getElementById('extra').textContent = 'No preview available.';
+}
+
+</script>
+</body>
+</html>
