@@ -56,6 +56,23 @@ For python main1.py
 2. Append /docs 
 Example: http://localhost:8002/docs
 
+Web Application Setup 
+
+The web frontend includes static HTML pages.  
+
+Steps 
+Repeat backend setup steps 1–5: 
+
+1. Create & activate virtual environment 
+2. Ensure HTML and Python backend files are in the same directory 
+3. Install dependencies 
+4. Update model path 
+5. Run backend: python main1.py
+
+Access the Website 
+http://127.0.0.1:8000 
+This loads the login webpage (login.html).  
+
 Troubleshooting
 
 Backend Not Starting -
