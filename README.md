@@ -1,62 +1,62 @@
-Backend Requirements
+Backend Requirements:
 
-Windows / Linux 
-Python 3.8+ 
-Python Virtual environment  
-Stable local network (if backend and frontend run on different machines) 
+1. Windows / Linux 
+2. Python 3.8+ 
+3. Python Virtual environment  
+4. Stable local network (if backend and frontend run on different machines) 
 
-Web App Requirements 
+Web App Requirements:
 
-VS Code 
-Python 3.8+ 
-Modern browser (Chrome, Edge, Firefox, Safari) 
+1. VS Code 
+2. Python 3.8+ 
+3. Modern browser (Chrome, Edge, Firefox, Safari) 
 
-Backend Installation & Setup 
+Backend Installation & Setup
 
-Create and Activate Virtual Environment 
+Create and Activate Virtual Environment:
 
-python -m venv venv 
+1. python -m venv venv 
 Windows: venv\Scripts\activate 
 macOS/Linux: source venv/bin/activate 
 
-Ensure Correct Directory Structure 
+Ensure Correct Directory Structure:
 
-Place main1.py, HTML files, and other backend scripts in the same directory. 
+1. Place main1.py, HTML files, and other backend scripts in the same directory. 
 
-Install Dependencies 
+Install Dependencies:
 
-pip install -r req.txt 
+1. pip install -r req.txt 
 
-Configure Model Path 
+Configure Model Path:
 
-Open cnn_loader.py and update the model path if necessary. 
+1. Open cnn_loader.py and update the model path if necessary. 
 
 Start the Backend 
 
-
 For the Web Application: 
 
-uvicorn main1:app –reload 
-This automatically: - Launches the FastAPI server - Creates sdpapp_database.db (SQLite database) 
+1. uvicorn main1:app –reload 
+2. This automatically:
+    1. Launches the FastAPI server
+    2. Creates sdpapp_database.db (SQLite database) 
 
+Access the Backend:
 
-Access the Backend 
-
-Click Ctrl + Click (Windows) or Cmd + Click (macOS).
+1. Click Ctrl + Click (Windows) or Cmd + Click (macOS).
 
 Examples: 
 For the Web Application: http://127.0.0.1:8000 
 
-Accessing API Documentation (Swagger UI) 
+Accessing API Documentation (Swagger UI):
 
-For uvicorn main1:app –reload:  
-Append docs :  http://127.0.0.1:8000/docs  
-For python main1.py 
-1. Replace 0.0.0.0 with localhodoc 
-2. Append /docs 
-Example: http://localhost:8002/docs
+1. For uvicorn main1:app –reload:  
+   Append docs :  http://127.0.0.1:8000/docs  
+2. For python main1.py 
+  1. Replace 0.0.0.0 with localhodoc 
+  2. Append /docs 
+  Example: http://localhost:8002/docs
 
-Web Application Setup 
+Web Application Setup:
 
 The web frontend includes static HTML pages.  
 
