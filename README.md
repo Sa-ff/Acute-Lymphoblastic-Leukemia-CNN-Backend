@@ -56,16 +56,11 @@ For python main1.py
 2. Append /docs 
 Example: http://localhost:8002/docs
 
+Troubleshooting
 
-Troubleshooting 
+Backend Not Starting -
+Ensure you activate the virtual environment. Reinstall dependencies: pip install -r req.txt
 
-Backend Not Starting-
-Ensure you activate the virtual environment. 
-Reinstall dependencies: pip install -r req.txt 
-
-Model Not Loading-
-Verify correct filename in cnn_loader.py 
-Confirm the .keras file is in the backend folder 
-
- 
+Model Not Loading -
+Verify correct filename in cnn_loader.py Confirm the .keras file is in the backend folder
 
