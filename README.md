@@ -33,9 +33,6 @@ Open cnn_loader.py and update the model path if necessary.
 
 Start the Backend 
 
-For the Mobile Application: 
-python main1.py 
-
 
 For the Web Application: 
 
